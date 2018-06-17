@@ -11,7 +11,7 @@ func doMount(samUrl, peersFilePath string) error {
 	if err != nil {
 		return err
 	}
-	fuseServer := fuse.NewServer()
+	fuseServer := fuse.NewServer("/tmp/test")
 	signals.Init(fuseServer)
 	fuseServer.Serve()
 	return nil

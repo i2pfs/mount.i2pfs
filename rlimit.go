@@ -3,7 +3,7 @@ package main
 import (
 	"syscall"
 
-	"github.com/i2pfs/mount.i2pfs/log"
+	"github.com/xaionaro-go/log"
 )
 
 func setRLimitNoFile(newLimit uint64) error {

@@ -5,8 +5,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/hanwen/go-fuse/fuse"
-	"github.com/i2pfs/mount.i2pfs/log"
+	"github.com/xaionaro-go/log"
+	"github.com/i2pfs/mount.i2pfs/fuse"
 )
 
 func Init(fuseServer *fuse.Server) {
@@ -15,11 +15,27 @@ func Init(fuseServer *fuse.Server) {
 	signal.Notify(ch, syscall.SIGTERM)
 	go func() {
 		<-ch
+		defer os.Exit(0)
 		err := fuseServer.Unmount()
+		if err == nil {
+			return
+		}
+		log.Warningf("[signals] Got an error while fuseServer.Unmount(): %v. Killing all users of the mountpoint.", err)
+		err = fuseServer.KillUsers()
 		if err != nil {
+			log.Warningf("[signals] Got an error while fuseServer.KillUsers(): %v", err)
+		} else {
+			err = fuseServer.Unmount()
+			if err == nil {
+				return
+			}
 			log.Warningf("[signals] Got an error while fuseServer.Unmount(): %v", err)
 		}
-		os.Exit(0)
+		log.Errorf("[signals] Give up. Lazy unmount.")
+		err = fuseServer.LazyUnmount()
+		if err != nil {
+			log.Errorf("[signals] Got an error while fuseServer.LazyUnmount(): %v", err)
+		}
 	}()
 	return
 }

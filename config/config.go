@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/i2pfs/mount.i2pfs/log"
+	"github.com/xaionaro-go/log"
 	"gopkg.in/ini.v1"
 )
 

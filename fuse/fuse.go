@@ -2,15 +2,21 @@ package fuse
 
 import (
 	"fmt"
+	"path/filepath"
 	"syscall"
 
 	"github.com/hanwen/go-fuse/fuse"
 	"github.com/i2pfs/mount.i2pfs/fuse/nodefs"
 	"github.com/i2pfs/mount.i2pfs/fuse/pathfs"
-	"github.com/i2pfs/mount.i2pfs/log"
+	"github.com/xaionaro-go/log"
 )
 
-func NewServer() *fuse.Server {
+type Server struct {
+	*fuse.Server
+	mountpoint string
+}
+
+func NewServer(mountpoint string) *Server {
 	fs := pathfs.NewFs()
 	pathFs := pathfs.NewPathNodeFs(fs)
 	conn := nodefs.NewFileSystemConnector(pathFs)
@@ -21,10 +27,16 @@ func NewServer() *fuse.Server {
 			"fsname=i2pfs",
 		},
 	}
-	fuseServer, err := fuse.NewServer(conn.RawFS(), "/tmp/test", &mountOptions)
+	server := &Server{}
+	var err error
+	server.mountpoint, err = filepath.Abs(mountpoint)
+	if err != nil {
+		log.Panic(err)
+	}
+	server.Server, err = fuse.NewServer(conn.RawFS(), server.mountpoint, &mountOptions)
 	if err != nil {
 		log.Panic(err)
 	}
 	syscall.Umask(0000)
-	return fuseServer
+	return server
 }

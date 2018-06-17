@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/i2pfs/mount.i2pfs/config"
-	"github.com/i2pfs/mount.i2pfs/log"
+	"github.com/xaionaro-go/log"
 )
 
 func main() {
