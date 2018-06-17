@@ -6,6 +6,7 @@ import (
 	"syscall"
 
 	"github.com/hanwen/go-fuse/fuse"
+	"github.com/i2pfs/mount.i2pfs/i2pClient"
 	"github.com/i2pfs/mount.i2pfs/fuse/nodefs"
 	"github.com/i2pfs/mount.i2pfs/fuse/pathfs"
 	"github.com/xaionaro-go/log"
@@ -14,9 +15,12 @@ import (
 type Server struct {
 	*fuse.Server
 	mountpoint string
+	cluster client.Cluster
 }
 
-func NewServer(mountpoint string) *Server {
+func NewServer(cluster client.Cluster, mountpoint string) *Server {
+	var err error
+
 	fs := pathfs.NewFs()
 	pathFs := pathfs.NewPathNodeFs(fs)
 	conn := nodefs.NewFileSystemConnector(pathFs)
@@ -28,7 +32,7 @@ func NewServer(mountpoint string) *Server {
 		},
 	}
 	server := &Server{}
-	var err error
+	server.cluster = cluster
 	server.mountpoint, err = filepath.Abs(mountpoint)
 	if err != nil {
 		log.Panic(err)

@@ -5,8 +5,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/xaionaro-go/log"
 	"github.com/i2pfs/mount.i2pfs/fuse"
+	"github.com/xaionaro-go/log"
 )
 
 func Init(fuseServer *fuse.Server) {
