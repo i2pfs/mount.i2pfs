@@ -6,5 +6,5 @@ import (
 )
 
 func MessageHandler(conn i2p.Connection, buf []byte) error {
-	return errors.NotImplemented.SetArgs("i2pClientHandler.MessageHandler")
+	return errors.NotImplemented.New(nil, "i2pClientHandler.MessageHandler")
 }

@@ -23,7 +23,7 @@ func (cluster *cluster) addPeer(peerAddress string) error {
 	peer := &peer{}
 	peer.address, err = cluster.sam.Lookup(peerAddress)
 	if err != nil {
-		return errors.CannotResolveAddress.SetArgs("cluster.addPeer", peerAddress, err)
+		return errors.CannotResolveAddress.New(err, "cluster.addPeer", peerAddress)
 	}
 	cluster.peers[peerAddress] = peer
 	return nil
@@ -31,7 +31,7 @@ func (cluster *cluster) addPeer(peerAddress string) error {
 
 func (cluster *cluster) removePeer(peerAddress string) error {
 	if cluster.peers[peerAddress] == nil {
-		return errors.NotFound.SetArgs("removePeer", peerAddress)
+		return errors.NotFound.New(nil, "removePeer", peerAddress)
 	}
 	cluster.peers[peerAddress] = nil
 	return nil
@@ -40,7 +40,7 @@ func (cluster *cluster) removePeer(peerAddress string) error {
 func (cluster *cluster) readPeersFromFile(peersFilePath string) error {
 	file, err := os.Open(peersFilePath)
 	if err != nil {
-		return errors.CannotOpenFile.SetArgs("readPeersFromFile", peersFilePath, err)
+		return errors.CannotOpenFile.New(err, "readPeersFromFile", peersFilePath)
 	}
 	defer file.Close()
 
@@ -73,7 +73,7 @@ func (cluster *cluster) connectToPeers() error {
 		}
 	}
 	if cluster.peers.OnlineCount() == 0 {
-		return errors.UnableToConnect.SetArgs("connectToPeers(): There're no reachable peers. (All peers are down? Or maybe empty peers list file?)")
+		return errors.UnableToConnect.New(nil, "connectToPeers(): There're no reachable peers. (All peers are down? Or maybe empty peers list file?)")
 	}
 	log.Debugf("Online peers: %v", cluster.peers.OnlineCount())
 	return nil

@@ -49,7 +49,7 @@ func (peer *peer) CreateStreamSession(cluster *cluster) error {
 	peer.streamSession, err = cluster.sam.NewStreamSession("mount.i2pfs." + peer.address.Base32(), cluster.keys, sam3.Options_Medium)
 	if err != nil {
 		peer.streamSession = nil
-		return errors.UnableToConnect.SetArgs("NewStreamSession", err.Error())
+		return errors.UnableToConnect.New(err, "NewStreamSession")
 	}
 	return nil
 }
@@ -68,7 +68,7 @@ func (peer *peer) Connect(cluster *cluster) error {
 	conn, err := peer.streamSession.DialI2P(peer.address)
 	if err != nil {
 		peer.conn = nil
-		return errors.UnableToConnect.SetArgs("DialI2P", err.Error())
+		return errors.UnableToConnect.New(err, "DialI2P")
 	}
 
 	peer.conn = i2p.NewConnection(conn)
