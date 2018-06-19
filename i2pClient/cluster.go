@@ -3,20 +3,45 @@ package client
 import (
 	"bufio"
 	"os"
+	"time"
 
 	"github.com/majestrate/i2p-tools/sam3"
 	"github.com/xaionaro-go/errors"
 	"github.com/xaionaro-go/log"
+	"github.com/i2pfs/mount.i2pfs/consts"
+	pb "github.com/i2pfs/i2pfsd/serverToClient/protobuf/generated"
 )
 
-type Cluster interface {
+type request interface {
+	MarshalTo([]byte) (int, error)
+	Size() int
+}
+
+type ClusterFS interface {
 	OpenDir(name string) (DirEntries, error)
+}
+
+type Cluster interface {
+	ClusterFS
+
+	RequestRead(path string, request request, ch chan<- *pb.Message) error
 }
 
 type cluster struct {
 	sam   *sam3.SAM
 	keys  sam3.I2PKeys
 	peers peers
+}
+
+func (cluster *cluster) RequestRead(path string, request request, ch chan<- *pb.Message) error {
+	log.Debugf(`cluster.ReadRequest("%v", %T<%v>, ch)`, path, request, request)
+
+	go func() {
+		time.Sleep(consts.TIMEOUT_READ * time.Second)
+		ch <- nil
+	}()
+
+	return errors.NotImplemented
 }
 
 func (cluster *cluster) addPeer(peerAddress string) error {
