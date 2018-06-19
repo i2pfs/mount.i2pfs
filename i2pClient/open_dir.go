@@ -8,7 +8,7 @@ import (
 
 func (cluster *cluster) OpenDir(name string) (DirEntries, error) {
 	ch := make(chan *pb.Message)
-	err := cluster.RequestRead(name, &pb.OpenDir{}, ch)
+	err := cluster.RequestRead(name, pb.OpenDir{}, ch)
 	if err != nil {
 		return nil, log.WarningWrapper(errors.UnableToMakeRequest, err)
 	}

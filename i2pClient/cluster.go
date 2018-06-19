@@ -12,9 +12,8 @@ import (
 	pb "github.com/i2pfs/i2pfsd/serverToClient/protobuf/generated"
 )
 
-type request interface {
-	MarshalTo([]byte) (int, error)
-	Size() int
+type requestRead interface {
+	IsRequestRead() bool
 }
 
 type ClusterFS interface {
@@ -24,7 +23,7 @@ type ClusterFS interface {
 type Cluster interface {
 	ClusterFS
 
-	RequestRead(path string, request request, ch chan<- *pb.Message) error
+	RequestRead(path string, request requestRead, ch chan<- *pb.Message) error
 }
 
 type cluster struct {
@@ -33,7 +32,7 @@ type cluster struct {
 	peers peers
 }
 
-func (cluster *cluster) RequestRead(path string, request request, ch chan<- *pb.Message) error {
+func (cluster *cluster) RequestRead(path string, request requestRead, ch chan<- *pb.Message) error {
 	log.Debugf(`cluster.ReadRequest("%v", %T<%v>, ch)`, path, request, request)
 
 	go func() {
