@@ -10,6 +10,7 @@ import (
 )
 
 type Cluster interface {
+	OpenDir(name string) (DirEntries, error)
 }
 
 type cluster struct {

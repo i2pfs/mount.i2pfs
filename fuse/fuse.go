@@ -21,7 +21,7 @@ type Server struct {
 func NewServer(cluster client.Cluster, mountpoint string) *Server {
 	var err error
 
-	fs := pathfs.NewFs()
+	fs := pathfs.NewFs(cluster)
 	pathFs := pathfs.NewPathNodeFs(fs)
 	conn := nodefs.NewFileSystemConnector(pathFs)
 	mountOptions := fuse.MountOptions{
