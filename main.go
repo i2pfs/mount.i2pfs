@@ -19,6 +19,7 @@ func main() {
 	cfg := config.GetDefaults()
 	cfg.ReloadConfig()
 
+	getopt.SetParameters("mountpoint")
 	helpFlag := getopt.BoolLong("help", 'h', "display help")
 	foregroundFlag := getopt.BoolLong("foreground", 'f', "run in foreground")
 	getopt.Parse()
@@ -29,6 +30,10 @@ func main() {
 	}
 
 	args := getopt.Args()
+	if len(args) == 0 {
+		usage()
+		return
+	}
 
 	mountpoint := args[0]
 

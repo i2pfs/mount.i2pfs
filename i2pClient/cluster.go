@@ -68,7 +68,7 @@ func (cluster *cluster) connectToPeers() error {
 		}
 		err := peer.Connect(cluster)
 		if err != nil {
-			log.Warningf("Cannot connect to %v: %v", peer.address, err)
+			log.Warningf("Cannot connect to %v: %v", peer.address, err.(errors.SmartError).ErrorShort())
 			cluster.removePeer(idx)
 		}
 	}

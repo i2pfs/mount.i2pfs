@@ -39,7 +39,7 @@ func helloMessageHandler(conn i2p.Connection, buf []byte) error {
 	case pb.ConnectionType_Client:
 		conn.SetMessageHandler(handler.MessageHandler)
 	default:
-		return errors.ProtocolMismatch
+		return log.WarningWrapper(errors.ProtocolMismatch, nil)
 	}
 	return err
 }
@@ -49,7 +49,7 @@ func (peer *peer) CreateStreamSession(cluster *cluster) error {
 	peer.streamSession, err = cluster.sam.NewStreamSession("mount.i2pfs." + peer.address.Base32(), cluster.keys, sam3.Options_Medium)
 	if err != nil {
 		peer.streamSession = nil
-		return errors.UnableToConnect.New(err, "NewStreamSession")
+		return log.WarningWrapper(errors.UnableToConnect, err, peer.address.Base32(), cluster.keys, sam3.Options_Medium)
 	}
 	return nil
 }
@@ -61,14 +61,14 @@ func (peer *peer) Connect(cluster *cluster) error {
 	if peer.streamSession == nil {
 		err := peer.CreateStreamSession(cluster)
 		if err != nil {
-			return err
+			return log.WarningWrapper(errors.UnableToStartSession, err)
 		}
 	}
 
 	conn, err := peer.streamSession.DialI2P(peer.address)
 	if err != nil {
 		peer.conn = nil
-		return errors.UnableToConnect.New(err, "DialI2P")
+		return log.WarningWrapper(errors.UnableToConnect, err)
 	}
 
 	peer.conn = i2p.NewConnection(conn)
