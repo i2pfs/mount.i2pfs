@@ -46,10 +46,11 @@ func helloMessageHandler(conn i2p.Connection, buf []byte) error {
 
 func (peer *peer) CreateStreamSession(cluster *cluster) error {
 	var err error
-	peer.streamSession, err = cluster.sam.NewStreamSession("mount.i2pfs." + peer.address.Base32(), cluster.keys, sam3.Options_Medium)
+	tunnelName := "mount.i2pfs." + peer.address.Base32()
+	peer.streamSession, err = cluster.sam.NewStreamSession(tunnelName, cluster.keys, sam3.Options_Medium)
 	if err != nil {
 		peer.streamSession = nil
-		return log.WarningWrapper(errors.UnableToConnect, err, peer.address.Base32(), cluster.keys, sam3.Options_Medium)
+		return log.WarningWrapper(errors.UnableToConnect, err, tunnelName, sam3.Options_Medium)
 	}
 	return nil
 }
